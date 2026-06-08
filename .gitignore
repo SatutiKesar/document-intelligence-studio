@@ -216,3 +216,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Custom Project Overrides
+# Private Credentials
+.env
+
+# Local Databases and Data Directories
+backend/chroma_db/
+data/
+
+# Explicit Virtual Environments (Backend/Frontend specific)
+venv/
+.venv/
+backend/venv/
+backend/.venv/
+frontend/venv/
+frontend/.venv/
