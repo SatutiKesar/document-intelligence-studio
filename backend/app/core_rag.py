@@ -8,7 +8,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
 
-# Load environment variables 
+# Loading environment variables 
 load_dotenv()
 
 # Global configuration variables
@@ -21,7 +21,7 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 CHROMA_PATH = os.path.abspath(os.path.join(CURRENT_DIR, "..", "chroma_db"))
 
 
-# Define the Prompt Framework globally
+# Defining the Prompt Framework globally
 prompt = PromptTemplate(
     template="""
     You are a helpful assistant.
@@ -47,14 +47,14 @@ def ingest_documents():
     loader = PyPDFDirectoryLoader(DATA_DIR)
     chunks = loader.load()
 
-    # Split the documents into smaller chunks to fit into the embedding model's context window
+    # Splitting the documents into smaller chunks to fit into the embedding model's context window
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     split_chunks = text_splitter.split_documents(chunks)
 
     print(f"Generated {len(split_chunks)} chunks. Generating embeddings...")
     embedding_model = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2")
 
-    # Store the chunks and their embeddings in ChromaDB
+    # Storing the chunks and their embeddings in ChromaDB
     vector_store = Chroma.from_documents(
         documents=split_chunks,
         embedding=embedding_model,
@@ -71,10 +71,10 @@ def _format_docs(retrieved_docs):
 
 def query_documents(user_question: str) -> str:
     """
-    Step 5 & 6: Run this every time a user asks a question.
+    Step 5 & 6: Every time a user asks a question.
     It reads from the already-saved database without reloading PDFs.
     """
-    # 1. Re-connect to the existing database on your hard drive
+    # 1. Re-connecting to the existing database on your hard drive
     embedding_model = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2")
     vector_store = Chroma(
         persist_directory=PERSIST_DIR,
@@ -83,10 +83,10 @@ def query_documents(user_question: str) -> str:
     )
     retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 4})
 
-    # 2. Set up the LLM
+    # 2. Setting up the LLM
     llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
 
-    # 3. Build your LCEL chain (exactly how you wrote it)
+    # 3. Building the LCEL chain
     parallel_chain = RunnableParallel({
         'context': retriever | RunnableLambda(_format_docs),
         'question': RunnablePassthrough()
@@ -100,10 +100,10 @@ def query_documents(user_question: str) -> str:
 
 # --- Local Testing Block ---
 if __name__ == "__main__":
-    # If it's your first time running it, uncomment the line below to build your DB:
+    
     # ingest_documents()
     
-    # Test your query function
+    # Testing function
     output = query_documents("What is generative ai?")
     print("\n--- Answer ---")
     print(output)
