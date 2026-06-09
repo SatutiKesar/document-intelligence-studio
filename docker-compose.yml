@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # 1. Backend Service Configuration
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/backend/app  # Code reloading 
+      - ./backend/data:/backend/data  # Data persistence
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+
+  # 2. Frontend Service Configuration
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend # First start backend, then frontend
